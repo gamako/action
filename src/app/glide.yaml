@@ -1,6 +1,6 @@
-package: .
+package: src
 import:
 - package: github.com/veandco/go-sdl2
-  version: v0.1
+  version: 95f3b18378d1144e7fbd74aedf4c9bf0f10aaf6f
   subpackages:
   - sdl

@@ -1,6 +1,9 @@
 package main
 
-import "github.com/veandco/go-sdl2/sdl"
+import (
+    "github.com/veandco/go-sdl2/sdl"
+//    img "github.com/veandco/go-sdl2/image"
+)
 
 func main() {
     // sdlの初期化
