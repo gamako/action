@@ -1,0 +1,6 @@
+package: .
+import:
+- package: github.com/veandco/go-sdl2
+  version: v0.1
+  subpackages:
+  - sdl
