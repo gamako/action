@@ -20,7 +20,9 @@ brew install golang glide sdl2
 ## ビルド方法
 
 ```
+cd src/app
 glide install
+cd ../..
 go build
 ```
 
