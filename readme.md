@@ -44,6 +44,19 @@ brew install golang glide sdl2
 }
 ```
 
+4. デバッグ環境の準備
+
+-  go delveのインストール
+    - brew install -v go-delve/delve/delve --HEAD
+      をしてもエラーになるので
+    - dlv-certという名前のcodesigin用自己証明書をつくって、keychainに登録（コマンドでのやりかたは、homebrewのformulaのrbスクリプトに書いてある）
+    - command-lineツールをappleからダウンロードしてインストール。
+      - osバージョン、Xcodeバージョンが合ったものをインストールする。
+
+参考
+
+https://qiita.com/TsuyoshiUshio@github/items/ba15b1a7e6c6e5ffaf43
+
 ## ビルド方法
 
 1. 環境変数GOPATHにこのプロジェクトのディレクトリを指定しておく
