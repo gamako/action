@@ -3,8 +3,18 @@ package main
 import (
 	"fmt"
 
+	"github.com/veandco/go-sdl2/img"
 	"github.com/veandco/go-sdl2/sdl"
 )
+
+type Point struct {
+	X int32
+	Y int32
+}
+
+type Player struct {
+	Point
+}
 
 func main() {
 	// sdlの初期化
@@ -31,6 +41,13 @@ func main() {
 	// 最後にrendererの後始末
 	defer render.Destroy()
 
+	t1, s1, err := loadTexture(render, "images/a.png")
+	if err != nil {
+		panic(err)
+	}
+	defer t1.Destroy()
+	defer s1.Free()
+
 	// 指定の色で全体をクリア
 	render.SetDrawColor(0, 0, 0, 255)
 	render.Clear()
@@ -40,21 +57,27 @@ func main() {
 	// コンソールへの出力を確認するためにPrintしてみる
 	fmt.Println("start!!")
 
-	var w int = 0
+	var p1 = Player{Point{X: 0, Y: 0}}
 
 	for i := 0; i < 10000; i++ {
 
-		var dx int = 0
+		// var dx int = 0
 
-		// キーボードの状態を取得
 		sdl.PumpEvents()
+
+		// Player情報を更新
 		keyboardState := sdl.GetKeyboardState()
 		if keyboardState[sdl.SCANCODE_RIGHT] != 0 {
-			dx = 1
+			p1.X += 1
 		} else if keyboardState[sdl.SCANCODE_LEFT] != 0 {
-			dx = -1
+			p1.X += -1
 		}
-		w = (w + dx + 800) % 800
+
+		if keyboardState[sdl.SCANCODE_UP] != 0 {
+			p1.Y += -1
+		} else if keyboardState[sdl.SCANCODE_DOWN] != 0 {
+			p1.Y += 1
+		}
 
 		// 毎回の画面の更新
 
@@ -62,11 +85,13 @@ func main() {
 		render.SetDrawColor(0, 0, 0, 255)
 		render.Clear()
 
-		// 指定の色、場所に四角を描く
-		// だんだんと動くように、カウンタを元に座標計算
-		render.SetDrawColor(255, 0, 0, 255)
-		rect := sdl.Rect{X: 0, Y: 0, W: int32(w), H: 200}
-		render.FillRect(&rect)
+		srcRect := sdl.Rect{W: s1.W, H: s1.H}
+		dstRect := sdl.Rect{X: p1.X, Y: p1.Y, W: s1.W, H: s1.H}
+
+		angle := float64(i % 360)
+		// dstRectで拡大率
+		// 次の引数で
+		render.CopyEx(t1, &srcRect, &dstRect, angle, nil, 0)
 
 		// renderをwindowに反映
 		render.Present()
@@ -78,4 +103,17 @@ func main() {
 
 	// しばし表示している
 	sdl.Delay(1000 * 2)
+}
+
+func loadTexture(r *sdl.Renderer, name string) (*sdl.Texture, *sdl.Surface, error) {
+	s, err := img.Load(name)
+	if err != nil {
+		return nil, nil, err
+	}
+	t, err := r.CreateTextureFromSurface(s)
+	if err != nil {
+		s.Free()
+		return nil, nil, err
+	}
+	return t, s, nil
 }
