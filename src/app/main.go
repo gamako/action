@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/veandco/go-sdl2/sdl"
 )
 
@@ -35,7 +37,24 @@ func main() {
 	// renderをwindowに反映
 	render.Present()
 
+	// コンソールへの出力を確認するためにPrintしてみる
+	fmt.Println("start!!")
+
+	var w int = 0
+
 	for i := 0; i < 10000; i++ {
+
+		var dx int = 0
+
+		// キーボードの状態を取得
+		sdl.PumpEvents()
+		keyboardState := sdl.GetKeyboardState()
+		if keyboardState[sdl.SCANCODE_RIGHT] != 0 {
+			dx = 1
+		} else if keyboardState[sdl.SCANCODE_LEFT] != 0 {
+			dx = -1
+		}
+		w = (w + dx + 800) % 800
 
 		// 毎回の画面の更新
 
@@ -46,7 +65,7 @@ func main() {
 		// 指定の色、場所に四角を描く
 		// だんだんと動くように、カウンタを元に座標計算
 		render.SetDrawColor(255, 0, 0, 255)
-		rect := sdl.Rect{X: 0, Y: 0, W: int32(i % 800), H: 200}
+		rect := sdl.Rect{X: 0, Y: 0, W: int32(w), H: 200}
 		render.FillRect(&rect)
 
 		// renderをwindowに反映
