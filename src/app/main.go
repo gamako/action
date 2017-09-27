@@ -26,6 +26,8 @@ type Player struct {
 	Point
 	angle float64
 
+	controller *sdl.GameController
+
 	t *sdl.Texture
 	s *sdl.Surface
 }
@@ -73,7 +75,12 @@ func main() {
 
 	nodes := []Node{}
 
-	p1 := Player{Point{0, 0}, 0, t1, s1}
+	cont := sdl.GameControllerOpen(0)
+	fmt.Printf("%s\n", cont.Name())
+
+	fmt.Printf("state: %d\n", sdl.GameControllerEventState(sdl.QUERY))
+
+	p1 := Player{Point{0, 0}, 0, cont, t1, s1}
 
 	nodes = append(nodes, &p1)
 
@@ -82,9 +89,12 @@ func main() {
 		// var dx int = 0
 
 		sdl.PumpEvents()
+		// sdl.GameControllerUpdate()
 
-		// Player情報を更新
-		p1.Update()
+		// Nodeをそれぞれ更新
+		for _, n := range nodes {
+			n.Update()
+		}
 
 		// 毎回の画面の更新
 
@@ -102,10 +112,12 @@ func main() {
 		// ちょっとだけ待つ
 		sdl.Delay(10 * 1)
 
+		if sdl.GetKeyboardState()[sdl.SCANCODE_Q] != 0 {
+			// Qキーで終了
+			break
+		}
 	}
 
-	// しばし表示している
-	sdl.Delay(1000 * 2)
 }
 
 func loadTexture(r *sdl.Renderer, name string) (*sdl.Texture, *sdl.Surface, error) {
@@ -152,6 +164,19 @@ func (p *Player) Update() {
 		p.Y += math.Cos(rad) * 1
 		p.X += math.Sin(rad) * -1
 	}
+
+	leftX := p.controller.GetAxis(sdl.CONTROLLER_AXIS_LEFTX)
+	leftY := p.controller.GetAxis(sdl.CONTROLLER_AXIS_LEFTY)
+	rightX := p.controller.GetAxis(sdl.CONTROLLER_AXIS_RIGHTX)
+	rightY := p.controller.GetAxis(sdl.CONTROLLER_AXIS_RIGHTY)
+	leftStick := p.controller.GetButton(sdl.CONTROLLER_BUTTON_LEFTSTICK)
+	leftShoulder := p.controller.GetButton(sdl.CONTROLLER_BUTTON_LEFTSHOULDER)
+	abutton := p.controller.GetButton(sdl.CONTROLLER_BUTTON_A)
+	buttonDUp := p.controller.GetButton(sdl.CONTROLLER_BUTTON_DPAD_UP)
+
+	fmt.Printf("left: %d, %d right: %d, %d lstick:%d lshoulder:%d a:%d dup:%d\n",
+		leftX, leftY, rightX, rightY, leftStick, leftShoulder, abutton, buttonDUp)
+
 }
 
 // Draw 描画
