@@ -26,7 +26,7 @@ type Player struct {
 	Point
 	angle float64
 
-	controller *sdl.GameController
+	controller *GameController
 
 	t *sdl.Texture
 	s *sdl.Surface
@@ -73,18 +73,18 @@ func main() {
 	// コンソールへの出力を確認するためにPrintしてみる
 	fmt.Println("start!!")
 
+	man := CotrolerManager{}
+
 	nodes := []Node{}
 
-	cont := sdl.GameControllerOpen(0)
-	fmt.Printf("%s\n", cont.Name())
-
-	fmt.Printf("state: %d\n", sdl.GameControllerEventState(sdl.QUERY))
-
-	p1 := Player{Point{0, 0}, 0, cont, t1, s1}
-
-	nodes = append(nodes, &p1)
-
 	for i := 0; i < 10000; i++ {
+
+		{
+			if c := man.GetNewGameController(); c != nil {
+				p1 := Player{Point{0, 0}, 0, c, t1, s1}
+				nodes = append(nodes, &p1)
+			}
+		}
 
 		// var dx int = 0
 
