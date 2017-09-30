@@ -177,6 +177,44 @@ func (p *Player) Update() {
 	fmt.Printf("left: %d, %d right: %d, %d lstick:%d lshoulder:%d a:%d dup:%d\n",
 		leftX, leftY, rightX, rightY, leftStick, leftShoulder, abutton, buttonDUp)
 
+	// 回転角度の決定 左スティックによる
+	{
+		x := float64(leftX) / -math.MinInt16
+		y := float64(leftY) / -math.MinInt16
+
+		if math.Abs(x) >= 0.2 && math.Abs(y) >= 0.2 {
+			var angle float64
+			if x == 0 {
+				if y > 0 {
+					angle = 90
+				} else {
+					angle = 0
+				}
+			} else {
+				angle = math.Atan(y/x) / math.Pi * 180
+				angle += 90
+
+				if x < 0 {
+					angle += 180
+				}
+			}
+			p.angle = angle
+
+		}
+	}
+
+	// 自身の移動
+	{
+		x := float64(rightX) / -math.MinInt16
+		y := float64(rightY) / -math.MinInt16
+
+		if math.Abs(x) >= 0.2 || math.Abs(y) >= 0.2 {
+			// たぶんここに速度係数を掛ける
+			p.X += x
+			p.Y += y
+		}
+	}
+
 }
 
 // Draw 描画
