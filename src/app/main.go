@@ -28,8 +28,7 @@ type Player struct {
 
 	controller *GameController
 
-	t *sdl.Texture
-	s *sdl.Surface
+	t []*Texture
 }
 
 func main() {
@@ -57,15 +56,28 @@ func main() {
 	// 最後にrendererの後始末
 	defer renderer.Destroy()
 
-	t1, s1, err := loadTexture(renderer, "images/a.png")
+	// t1, s1, err := loadTexture(renderer, "images/a.png")
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// defer t1.Destroy()
+	// defer s1.Free()
+
+	ts, err := LoadTextures(renderer, []string{
+		"images/anim/character0000.png",
+		"images/anim/character0001.png",
+		"images/anim/character0002.png"})
 	if err != nil {
 		panic(err)
 	}
-	defer t1.Destroy()
-	defer s1.Free()
+	defer func() {
+		for _, v := range ts {
+			v.Free()
+		}
+	}()
 
 	// 指定の色で全体をクリア
-	renderer.SetDrawColor(0, 0, 0, 255)
+	renderer.SetDrawColor(128, 128, 128, 255)
 	renderer.Clear()
 	// renderをwindowに反映
 	renderer.Present()
@@ -81,7 +93,7 @@ func main() {
 
 		{
 			if c := man.GetNewGameController(); c != nil {
-				p1 := Player{Point{0, 0}, 0, c, t1, s1}
+				p1 := Player{Point{0, 0}, 0, c, ts}
 				nodes = append(nodes, &p1)
 			}
 		}
@@ -99,7 +111,7 @@ func main() {
 		// 毎回の画面の更新
 
 		// 指定の色で全体をクリア
-		renderer.SetDrawColor(0, 0, 0, 255)
+		renderer.SetDrawColor(128, 128, 128, 255)
 		renderer.Clear()
 
 		for _, n := range nodes {
@@ -220,10 +232,13 @@ func (p *Player) Update() {
 // Draw 描画
 func (p *Player) Draw(r *sdl.Renderer) {
 
-	srcRect := sdl.Rect{W: p.s.W, H: p.s.H}
-	dstRect := sdl.Rect{X: int32(p.X), Y: int32(p.Y), W: p.s.W, H: p.s.H}
+	w := p.t[0].Surface.W
+	h := p.t[0].Surface.H
+
+	srcRect := sdl.Rect{W: w, H: h}
+	dstRect := sdl.Rect{X: int32(p.X), Y: int32(p.Y), W: w, H: h}
 
 	// dstRectで拡大率
 	// angleで回転
-	r.CopyEx(p.t, &srcRect, &dstRect, p.angle, nil, 0)
+	r.CopyEx(p.t[0].Texture, &srcRect, &dstRect, p.angle, nil, 0)
 }
