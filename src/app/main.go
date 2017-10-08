@@ -223,8 +223,13 @@ func (p *Player) Draw(r *sdl.Renderer) {
 	w := p.t[0].Surface.W
 	h := p.t[0].Surface.H
 
+	scale := float64(4) // 拡大率
+
 	srcRect := sdl.Rect{W: w, H: h}
-	dstRect := sdl.Rect{X: int32(p.X), Y: int32(p.Y), W: w, H: h}
+	dstW := float64(w) * scale
+	dstH := float64(h) * scale
+
+	dstRect := sdl.Rect{X: int32(p.X - dstW/2), Y: int32(p.Y - dstH/2), W: int32(dstW), H: int32(dstH)}
 
 	// dstRectで拡大率
 	// angleで回転
