@@ -91,7 +91,7 @@ func main() {
 
 	nodes := []Node{}
 
-	for i := 0; i < 10000; i++ {
+	for {
 
 		{
 			cs := man.GetNewGameController()
@@ -180,13 +180,10 @@ func (p *Player) Update() {
 		if math.Abs(x) >= 0.2 || math.Abs(y) >= 0.2 {
 			if y == 0 {
 				if x > 0 {
-					fmt.Printf("1")
 					p.angle = 90
 				} else if x < 0 {
-					fmt.Printf("2")
 					p.angle = 270
 				} else {
-					fmt.Printf("3")
 					// ボタンを押していない間はangleをキープ
 				}
 			} else {
@@ -195,7 +192,6 @@ func (p *Player) Update() {
 				if y > 0 {
 					angle += 180
 				}
-				fmt.Printf("4 : %f %f angle %f", x, y, angle)
 
 				p.angle = angle
 			}
