@@ -9,7 +9,7 @@ import (
 // CotrolerManager コントローラー管理
 type CotrolerManager struct {
 	// NumOfControllers  int
-	OpenedControllers []*GameController
+	OpenedControllers []Controller
 }
 
 // GameController CotrolerManagerが管理しているControllerの情報
@@ -22,20 +22,36 @@ func (c *GameController) SDLController() *sdl.GameController {
 	return c.GameController
 }
 
+func isInclude(controllers *[]Controller, cont Controller) bool {
+	for _, v := range *controllers {
+		if v == cont {
+			return true
+		}
+	}
+	return false
+}
+
 // GetNewGameController 新しく接続されたコントローラーオブジェクトがあれば取得
-func (m *CotrolerManager) GetNewGameController() *GameController {
+func (m *CotrolerManager) GetNewGameController() (retControllers []Controller) {
+
+	retControllers = []Controller{}
+
+	if len(m.OpenedControllers) == 0 {
+		// キーボードは必ず存在することにする
+		retControllers = append(retControllers, &KeybordController{})
+	}
 
 	num := sdl.NumJoysticks()
 
-	if len(m.OpenedControllers) == num {
+	if len(m.OpenedControllers)-1 == num {
 		// コントローラーが増えてない場合
-		return nil
+		return
 	}
 
-	if len(m.OpenedControllers) > num {
+	if len(m.OpenedControllers)-1 > num {
 		// Open中に無効になる場合があるのか？
 		fmt.Println("len(m.OpenedControllers) < num ..", len(m.OpenedControllers), "/", num)
-		return nil
+		return
 	}
 
 	// 新しいコントローラーオブジェクトをOpen
@@ -52,5 +68,7 @@ func (m *CotrolerManager) GetNewGameController() *GameController {
 
 	fmt.Println("len(m.OpenedControllers) = ", len(m.OpenedControllers))
 
-	return controller
+	retControllers = append(retControllers, controller)
+
+	return
 }

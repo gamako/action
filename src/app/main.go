@@ -26,9 +26,11 @@ type Player struct {
 	Point
 	angle float64
 
-	controller *GameController
+	controller Controller
 
 	t []*Texture
+
+	enabled bool
 }
 
 func main() {
@@ -92,8 +94,9 @@ func main() {
 	for i := 0; i < 10000; i++ {
 
 		{
-			if c := man.GetNewGameController(); c != nil {
-				p1 := Player{Point{0, 0}, 0, c, ts}
+			cs := man.GetNewGameController()
+			for _, c := range cs {
+				p1 := Player{Point{0, 0}, 0, c, ts, false}
 				nodes = append(nodes, &p1)
 			}
 		}
@@ -147,35 +150,6 @@ func loadTexture(r *sdl.Renderer, name string) (*sdl.Texture, *sdl.Surface, erro
 
 // Update 毎フレームの更新関数
 func (p *Player) Update() {
-	keyboardState := sdl.GetKeyboardState()
-
-	space := keyboardState[sdl.SCANCODE_SPACE]
-
-	rad := p.angle * float64(math.Pi) / 180
-
-	if space != 0 {
-		if keyboardState[sdl.SCANCODE_RIGHT] != 0 {
-			p.Y += math.Sin(rad) * 1
-			p.X += math.Cos(rad) * 1
-		} else if keyboardState[sdl.SCANCODE_LEFT] != 0 {
-			p.Y += math.Sin(rad) * -1
-			p.X += math.Cos(rad) * -1
-		}
-	} else {
-		if keyboardState[sdl.SCANCODE_RIGHT] != 0 {
-			p.angle++
-		} else if keyboardState[sdl.SCANCODE_LEFT] != 0 {
-			p.angle--
-		}
-	}
-
-	if keyboardState[sdl.SCANCODE_UP] != 0 {
-		p.Y += math.Cos(rad) * -1
-		p.X += math.Sin(rad) * 1
-	} else if keyboardState[sdl.SCANCODE_DOWN] != 0 {
-		p.Y += math.Cos(rad) * 1
-		p.X += math.Sin(rad) * -1
-	}
 
 	leftX := p.controller.GetAxis(sdl.CONTROLLER_AXIS_LEFTX)
 	leftY := p.controller.GetAxis(sdl.CONTROLLER_AXIS_LEFTY)
@@ -186,6 +160,15 @@ func (p *Player) Update() {
 	abutton := p.controller.GetButton(sdl.CONTROLLER_BUTTON_A)
 	buttonDUp := p.controller.GetButton(sdl.CONTROLLER_BUTTON_DPAD_UP)
 
+	// ボタンを押したコントローラーが有効になる
+	if !p.enabled {
+		if abutton != 0 {
+			p.enabled = true
+		} else {
+			return
+		}
+	}
+
 	fmt.Printf("left: %d, %d right: %d, %d lstick:%d lshoulder:%d a:%d dup:%d\n",
 		leftX, leftY, rightX, rightY, leftStick, leftShoulder, abutton, buttonDUp)
 
@@ -194,23 +177,28 @@ func (p *Player) Update() {
 		x := float64(leftX) / -math.MinInt16
 		y := float64(leftY) / -math.MinInt16
 
-		if math.Abs(x) >= 0.2 && math.Abs(y) >= 0.2 {
-			var angle float64
-			if x == 0 {
-				if y > 0 {
-					angle = 90
+		if math.Abs(x) >= 0.2 || math.Abs(y) >= 0.2 {
+			if y == 0 {
+				if x > 0 {
+					fmt.Printf("1")
+					p.angle = 90
+				} else if x < 0 {
+					fmt.Printf("2")
+					p.angle = 270
 				} else {
-					angle = 0
+					fmt.Printf("3")
+					// ボタンを押していない間はangleをキープ
 				}
 			} else {
-				angle = math.Atan(y/x) / math.Pi * 180
-				angle += 90
+				angle := math.Atan(-x/y) / math.Pi * 180
 
-				if x < 0 {
+				if y > 0 {
 					angle += 180
 				}
+				fmt.Printf("4 : %f %f angle %f", x, y, angle)
+
+				p.angle = angle
 			}
-			p.angle = angle
 
 		}
 	}
@@ -231,6 +219,10 @@ func (p *Player) Update() {
 
 // Draw 描画
 func (p *Player) Draw(r *sdl.Renderer) {
+
+	if !p.enabled {
+		return
+	}
 
 	w := p.t[0].Surface.W
 	h := p.t[0].Surface.H
