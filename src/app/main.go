@@ -155,10 +155,10 @@ func (p *Player) Update() {
 	leftY := p.controller.GetAxis(sdl.CONTROLLER_AXIS_LEFTY)
 	rightX := p.controller.GetAxis(sdl.CONTROLLER_AXIS_RIGHTX)
 	rightY := p.controller.GetAxis(sdl.CONTROLLER_AXIS_RIGHTY)
-	leftStick := p.controller.GetButton(sdl.CONTROLLER_BUTTON_LEFTSTICK)
-	leftShoulder := p.controller.GetButton(sdl.CONTROLLER_BUTTON_LEFTSHOULDER)
+	//leftStick := p.controller.GetButton(sdl.CONTROLLER_BUTTON_LEFTSTICK)
+	//leftShoulder := p.controller.GetButton(sdl.CONTROLLER_BUTTON_LEFTSHOULDER)
 	abutton := p.controller.GetButton(sdl.CONTROLLER_BUTTON_A)
-	buttonDUp := p.controller.GetButton(sdl.CONTROLLER_BUTTON_DPAD_UP)
+	//buttonDUp := p.controller.GetButton(sdl.CONTROLLER_BUTTON_DPAD_UP)
 
 	// ボタンを押したコントローラーが有効になる
 	if !p.enabled {
@@ -169,8 +169,8 @@ func (p *Player) Update() {
 		}
 	}
 
-	fmt.Printf("left: %d, %d right: %d, %d lstick:%d lshoulder:%d a:%d dup:%d\n",
-		leftX, leftY, rightX, rightY, leftStick, leftShoulder, abutton, buttonDUp)
+	// fmt.Printf("left: %d, %d right: %d, %d lstick:%d lshoulder:%d a:%d dup:%d\n",
+	// 	leftX, leftY, rightX, rightY, leftStick, leftShoulder, abutton, buttonDUp)
 
 	// 回転角度の決定 左スティックによる
 	{
