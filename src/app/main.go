@@ -174,8 +174,8 @@ func (p *Player) Update() {
 
 	// 回転角度の決定 左スティックによる
 	{
-		x := float64(leftX) / -math.MinInt16
-		y := float64(leftY) / -math.MinInt16
+		x := float64(rightX) / -math.MinInt16
+		y := float64(rightY) / -math.MinInt16
 
 		if math.Abs(x) >= 0.2 || math.Abs(y) >= 0.2 {
 			if y == 0 {
@@ -201,8 +201,8 @@ func (p *Player) Update() {
 
 	// 自身の移動
 	{
-		x := float64(rightX) / -math.MinInt16
-		y := float64(rightY) / -math.MinInt16
+		x := float64(leftX) / -math.MinInt16
+		y := float64(leftY) / -math.MinInt16
 
 		if math.Abs(x) >= 0.2 || math.Abs(y) >= 0.2 {
 			// たぶんここに速度係数を掛ける
