@@ -7,11 +7,11 @@ import (
 // Animation アニメーションの基底インターフェース
 type Animation interface {
 	Start()
-	Draw(r *sdl.Renderer, t float64, x float64, y float64, scale float64, angle float64)
+	Draw(r *sdl.Renderer, t float64, transform *Transform)
 }
 
 // FiniteAnimation 時間権限のあるアニメーション
 type FiniteAnimation interface {
-	DrawRatio(r *sdl.Renderer, t float64, x float64, y float64, scale float64, angle float64)
+	Draw(r *sdl.Renderer, t float64, transform *Transform)
 	Duration() float64
 }

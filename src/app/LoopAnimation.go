@@ -26,7 +26,7 @@ func (a *LoopAnimation) Start() {
 }
 
 // Draw LoopAnimationの描画
-func (a *LoopAnimation) Draw(r *sdl.Renderer, now float64, x float64, y float64, scale float64, angle float64) {
+func (a *LoopAnimation) Draw(r *sdl.Renderer, now float64, t *Transform) {
 
 	if !a.isEnabled {
 		return
@@ -41,5 +41,5 @@ func (a *LoopAnimation) Draw(r *sdl.Renderer, now float64, x float64, y float64,
 
 	ratio := math.Mod(elapsed, a.animation.Duration())
 
-	a.animation.DrawRatio(r, ratio, x, y, scale, angle)
+	a.animation.Draw(r, ratio, t)
 }

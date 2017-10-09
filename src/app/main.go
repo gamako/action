@@ -14,11 +14,29 @@ type Point struct {
 	Y float64
 }
 
+// Size サイズを表す構造体
+type Size struct {
+	W float64
+	H float64
+}
+
+// Transform 2Dtransformを表す構造体
+type Transform struct {
+	Point
+	Scale float64
+	Angle float64
+}
+
+// TransformIdentity 基本transform
+var TransformIdentity = Transform{Point{0, 0}, 1, 0}
+
 // Node ノードインターフェース
 // 表示キャラクタの管理と描画に関するインターフェース
 type Node interface {
+	GetTransform() *Transform
 	Update(float64)
-	Draw(*sdl.Renderer, float64)
+	Draw(*sdl.Renderer, *Transform, float64)
+	Chilidren() []Node
 }
 
 func main() {
@@ -80,13 +98,10 @@ func main() {
 		{
 			cs := man.GetNewGameController()
 			for _, c := range cs {
+				p := CreatePlayer(ts, c)
+				p.animation.Start()
 
-				f := CreateFrameAnimation([]*Texture{ts[0], ts[1]}, 1)
-				animation := CreateLoopAnimation(f)
-				animation.Start()
-
-				p1 := Player{Point{0, 0}, 0, c, animation, false}
-				nodes = append(nodes, &p1)
+				nodes = append(nodes, &p)
 			}
 		}
 
@@ -107,7 +122,7 @@ func main() {
 		renderer.Clear()
 
 		for _, n := range nodes {
-			n.Draw(renderer, now)
+			n.Draw(renderer, &TransformIdentity, now)
 		}
 
 		// renderをwindowに反映
@@ -135,4 +150,46 @@ func loadTexture(r *sdl.Renderer, name string) (*sdl.Texture, *sdl.Surface, erro
 		return nil, nil, err
 	}
 	return t, s, nil
+}
+
+func Update(node Node, now float64) {
+
+	node.Update(now)
+
+	UpdateChildren(node, now)
+}
+
+func UpdateChildren(node Node, now float64) {
+	for _, child := range node.Chilidren() {
+		Update(child, now)
+	}
+}
+
+func Draw(r *sdl.Renderer, node Node, parentTransform *Transform, now float64) {
+
+	node.Draw(r, parentTransform, now)
+
+	DrawChildren(r, node, parentTransform, now)
+}
+
+func DrawChildren(r *sdl.Renderer, node Node, parentTransform *Transform, now float64) {
+
+	t := mul(node.GetTransform(), parentTransform)
+	for _, child := range node.Chilidren() {
+		Draw(r, child, t, now)
+	}
+}
+
+func mul(t1, t2 *Transform) *Transform {
+	// 簡易的に位置と大きさだけを扱う
+	return &Transform{
+		plus(&t1.Point, &t2.Point),
+		t1.Scale + t2.Scale,
+		t2.Angle}
+}
+
+func plus(p1, p2 *Point) Point {
+	return Point{
+		p1.X + p2.X,
+		p1.Y + p2.Y}
 }

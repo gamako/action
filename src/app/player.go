@@ -8,14 +8,23 @@ import (
 
 // Player プレイヤー情報
 type Player struct {
-	Point
-	angle float64
-
+	Transform
 	controller Controller
+	animation  Animation
+	enabled    bool
+}
 
-	animation Animation
+// CreatePlayer 生成
+func CreatePlayer(ts []*Texture, c Controller) Player {
+	f := CreateFrameAnimation([]*Texture{ts[0], ts[1]}, 1)
+	animation := CreateLoopAnimation(f)
 
-	enabled bool
+	return Player{TransformIdentity, c, animation, false}
+}
+
+// GetTransform Transform情報
+func (p *Player) GetTransform() *Transform {
+	return &p.Transform
 }
 
 // Update 毎フレームの更新関数
@@ -51,9 +60,9 @@ func (p *Player) Update(now float64) {
 		if math.Abs(x) >= 0.2 || math.Abs(y) >= 0.2 {
 			if y == 0 {
 				if x > 0 {
-					p.angle = 90
+					p.Transform.Angle = 90
 				} else if x < 0 {
-					p.angle = 270
+					p.Transform.Angle = 270
 				} else {
 					// ボタンを押していない間はangleをキープ
 				}
@@ -64,7 +73,7 @@ func (p *Player) Update(now float64) {
 					angle += 180
 				}
 
-				p.angle = angle
+				p.Transform.Angle = angle
 			}
 
 		}
@@ -85,11 +94,18 @@ func (p *Player) Update(now float64) {
 }
 
 // Draw 描画
-func (p *Player) Draw(r *sdl.Renderer, now float64) {
+func (p *Player) Draw(r *sdl.Renderer, parentTransform *Transform, now float64) {
 
 	if !p.enabled {
 		return
 	}
 
-	p.animation.Draw(r, now, p.X, p.Y, float64(4), p.angle)
+	p.animation.Draw(r, now, &p.Transform)
+
+	DrawChildren(r, p, parentTransform, now)
+}
+
+// Chilidren 子
+func (p *Player) Chilidren() []Node {
+	return []Node{}
 }

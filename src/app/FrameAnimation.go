@@ -28,11 +28,11 @@ func (a *FrameAnimation) Duration() float64 {
 	return a.duration
 }
 
-// DrawRatio 描画
+// Draw 描画
 // t は 0~Durationの間
-func (a *FrameAnimation) DrawRatio(r *sdl.Renderer, t float64, x float64, y float64, scale float64, angle float64) {
+func (a *FrameAnimation) Draw(r *sdl.Renderer, time float64, transform *Transform) {
 
-	index := int(t / a.unit)
+	index := int(time / a.unit)
 
 	if index >= len(a.textures) {
 		index = len(a.textures) - 1
@@ -44,12 +44,12 @@ func (a *FrameAnimation) DrawRatio(r *sdl.Renderer, t float64, x float64, y floa
 	h := tex.Surface.H
 
 	srcRect := sdl.Rect{W: w, H: h}
-	dstW := float64(w) * scale
-	dstH := float64(h) * scale
+	dstW := float64(w) * transform.Scale
+	dstH := float64(h) * transform.Scale
 
-	dstRect := sdl.Rect{X: int32(x - dstW/2), Y: int32(y - dstH/2), W: int32(dstW), H: int32(dstH)}
+	dstRect := sdl.Rect{X: int32(transform.X - dstW/2), Y: int32(transform.Y - dstH/2), W: int32(dstW), H: int32(dstH)}
 
 	// dstRectで拡大率
 	// angleで回転
-	r.CopyEx(tex.Texture, &srcRect, &dstRect, angle, nil, 0)
+	r.CopyEx(tex.Texture, &srcRect, &dstRect, transform.Angle, nil, 0)
 }
