@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"math"
 	"time"
 
 	"github.com/veandco/go-sdl2/img"
@@ -20,18 +19,6 @@ type Point struct {
 type Node interface {
 	Update(float64)
 	Draw(*sdl.Renderer, float64)
-}
-
-// Player プレイヤー情報
-type Player struct {
-	Point
-	angle float64
-
-	controller Controller
-
-	animation Animation
-
-	enabled bool
 }
 
 func main() {
@@ -148,95 +135,4 @@ func loadTexture(r *sdl.Renderer, name string) (*sdl.Texture, *sdl.Surface, erro
 		return nil, nil, err
 	}
 	return t, s, nil
-}
-
-// Update 毎フレームの更新関数
-func (p *Player) Update(now float64) {
-
-	leftX := p.controller.GetAxis(sdl.CONTROLLER_AXIS_LEFTX)
-	leftY := p.controller.GetAxis(sdl.CONTROLLER_AXIS_LEFTY)
-	rightX := p.controller.GetAxis(sdl.CONTROLLER_AXIS_RIGHTX)
-	rightY := p.controller.GetAxis(sdl.CONTROLLER_AXIS_RIGHTY)
-	// leftStick := p.controller.GetButton(sdl.CONTROLLER_BUTTON_LEFTSTICK)
-	// leftShoulder := p.controller.GetButton(sdl.CONTROLLER_BUTTON_LEFTSHOULDER)
-	abutton := p.controller.GetButton(sdl.CONTROLLER_BUTTON_A)
-	// buttonDUp := p.controller.GetButton(sdl.CONTROLLER_BUTTON_DPAD_UP)
-
-	// ボタンを押したコントローラーが有効になる
-	if !p.enabled {
-		if abutton != 0 {
-			println("player enabled :", p.controller.Name())
-			p.enabled = true
-		} else {
-			return
-		}
-	}
-
-	// fmt.Printf("left: %d, %d right: %d, %d lstick:%d lshoulder:%d a:%d dup:%d\n",
-	// 	leftX, leftY, rightX, rightY, leftStick, leftShoulder, abutton, buttonDUp)
-
-	// 回転角度の決定 左スティックによる
-	{
-		x := float64(rightX) / -math.MinInt16
-		y := float64(rightY) / -math.MinInt16
-
-		if math.Abs(x) >= 0.2 || math.Abs(y) >= 0.2 {
-			if y == 0 {
-				if x > 0 {
-					p.angle = 90
-				} else if x < 0 {
-					p.angle = 270
-				} else {
-					// ボタンを押していない間はangleをキープ
-				}
-			} else {
-				angle := math.Atan(-x/y) / math.Pi * 180
-
-				if y > 0 {
-					angle += 180
-				}
-
-				p.angle = angle
-			}
-
-		}
-	}
-
-	// 自身の移動
-	{
-		x := float64(leftX) / -math.MinInt16
-		y := float64(leftY) / -math.MinInt16
-
-		if math.Abs(x) >= 0.2 || math.Abs(y) >= 0.2 {
-			// たぶんここに速度係数を掛ける
-			p.X += x
-			p.Y += y
-		}
-	}
-
-}
-
-// Draw 描画
-func (p *Player) Draw(r *sdl.Renderer, now float64) {
-
-	if !p.enabled {
-		return
-	}
-
-	p.animation.Draw(r, now, p.X, p.Y, float64(4), p.angle)
-
-	// w := p.t[0].Surface.W
-	// h := p.t[0].Surface.H
-
-	// scale := float64(4) // 拡大率
-
-	// srcRect := sdl.Rect{W: w, H: h}
-	// dstW := float64(w) * scale
-	// dstH := float64(h) * scale
-
-	// dstRect := sdl.Rect{X: int32(p.X - dstW/2), Y: int32(p.Y - dstH/2), W: int32(dstW), H: int32(dstH)}
-
-	// // dstRectで拡大率
-	// // angleで回転
-	// r.CopyEx(p.t[0].Texture, &srcRect, &dstRect, p.angle, nil, 0)
 }
