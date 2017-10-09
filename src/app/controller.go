@@ -5,6 +5,7 @@ import "math"
 
 // Controller キーボードを含んだコントローラーの抽象化インターフェース
 type Controller interface {
+	Name() string
 	GetAxis(axis sdl.GameControllerAxis) int16
 	GetButton(btn sdl.GameControllerButton) byte
 	Close()
@@ -12,6 +13,11 @@ type Controller interface {
 
 // KeybordController キーボードをgameControllerと同じインターフェースで扱うためのstruct
 type KeybordController struct {
+}
+
+// Name 名前の取得
+func (k *KeybordController) Name() string {
+	return "Keybord"
 }
 
 // GetAxis スティック情報

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math"
+	"time"
 
 	"github.com/veandco/go-sdl2/img"
 	"github.com/veandco/go-sdl2/sdl"
@@ -17,8 +18,8 @@ type Point struct {
 // Node ノードインターフェース
 // 表示キャラクタの管理と描画に関するインターフェース
 type Node interface {
-	Update()
-	Draw(*sdl.Renderer)
+	Update(float64)
+	Draw(*sdl.Renderer, float64)
 }
 
 // Player プレイヤー情報
@@ -28,7 +29,7 @@ type Player struct {
 
 	controller Controller
 
-	t []*Texture
+	animation Animation
 
 	enabled bool
 }
@@ -58,13 +59,6 @@ func main() {
 	// 最後にrendererの後始末
 	defer renderer.Destroy()
 
-	// t1, s1, err := loadTexture(renderer, "images/a.png")
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// defer t1.Destroy()
-	// defer s1.Free()
-
 	ts, err := LoadTextures(renderer, []string{
 		"images/anim/character0000.png",
 		"images/anim/character0001.png",
@@ -91,12 +85,20 @@ func main() {
 
 	nodes := []Node{}
 
+	startTime := time.Now()
+
 	for {
+		now := time.Since(startTime).Seconds()
 
 		{
 			cs := man.GetNewGameController()
 			for _, c := range cs {
-				p1 := Player{Point{0, 0}, 0, c, ts, false}
+
+				f := CreateFrameAnimation([]*Texture{ts[0], ts[1]}, 1)
+				animation := CreateLoopAnimation(f)
+				animation.Start()
+
+				p1 := Player{Point{0, 0}, 0, c, animation, false}
 				nodes = append(nodes, &p1)
 			}
 		}
@@ -108,7 +110,7 @@ func main() {
 
 		// Nodeをそれぞれ更新
 		for _, n := range nodes {
-			n.Update()
+			n.Update(now)
 		}
 
 		// 毎回の画面の更新
@@ -118,7 +120,7 @@ func main() {
 		renderer.Clear()
 
 		for _, n := range nodes {
-			n.Draw(renderer)
+			n.Draw(renderer, now)
 		}
 
 		// renderをwindowに反映
@@ -149,20 +151,21 @@ func loadTexture(r *sdl.Renderer, name string) (*sdl.Texture, *sdl.Surface, erro
 }
 
 // Update 毎フレームの更新関数
-func (p *Player) Update() {
+func (p *Player) Update(now float64) {
 
 	leftX := p.controller.GetAxis(sdl.CONTROLLER_AXIS_LEFTX)
 	leftY := p.controller.GetAxis(sdl.CONTROLLER_AXIS_LEFTY)
 	rightX := p.controller.GetAxis(sdl.CONTROLLER_AXIS_RIGHTX)
 	rightY := p.controller.GetAxis(sdl.CONTROLLER_AXIS_RIGHTY)
-	//leftStick := p.controller.GetButton(sdl.CONTROLLER_BUTTON_LEFTSTICK)
-	//leftShoulder := p.controller.GetButton(sdl.CONTROLLER_BUTTON_LEFTSHOULDER)
+	// leftStick := p.controller.GetButton(sdl.CONTROLLER_BUTTON_LEFTSTICK)
+	// leftShoulder := p.controller.GetButton(sdl.CONTROLLER_BUTTON_LEFTSHOULDER)
 	abutton := p.controller.GetButton(sdl.CONTROLLER_BUTTON_A)
-	//buttonDUp := p.controller.GetButton(sdl.CONTROLLER_BUTTON_DPAD_UP)
+	// buttonDUp := p.controller.GetButton(sdl.CONTROLLER_BUTTON_DPAD_UP)
 
 	// ボタンを押したコントローラーが有効になる
 	if !p.enabled {
 		if abutton != 0 {
+			println("player enabled :", p.controller.Name())
 			p.enabled = true
 		} else {
 			return
@@ -214,24 +217,26 @@ func (p *Player) Update() {
 }
 
 // Draw 描画
-func (p *Player) Draw(r *sdl.Renderer) {
+func (p *Player) Draw(r *sdl.Renderer, now float64) {
 
 	if !p.enabled {
 		return
 	}
 
-	w := p.t[0].Surface.W
-	h := p.t[0].Surface.H
+	p.animation.Draw(r, now, p.X, p.Y, float64(4), p.angle)
 
-	scale := float64(4) // 拡大率
+	// w := p.t[0].Surface.W
+	// h := p.t[0].Surface.H
 
-	srcRect := sdl.Rect{W: w, H: h}
-	dstW := float64(w) * scale
-	dstH := float64(h) * scale
+	// scale := float64(4) // 拡大率
 
-	dstRect := sdl.Rect{X: int32(p.X - dstW/2), Y: int32(p.Y - dstH/2), W: int32(dstW), H: int32(dstH)}
+	// srcRect := sdl.Rect{W: w, H: h}
+	// dstW := float64(w) * scale
+	// dstH := float64(h) * scale
 
-	// dstRectで拡大率
-	// angleで回転
-	r.CopyEx(p.t[0].Texture, &srcRect, &dstRect, p.angle, nil, 0)
+	// dstRect := sdl.Rect{X: int32(p.X - dstW/2), Y: int32(p.Y - dstH/2), W: int32(dstW), H: int32(dstH)}
+
+	// // dstRectで拡大率
+	// // angleで回転
+	// r.CopyEx(p.t[0].Texture, &srcRect, &dstRect, p.angle, nil, 0)
 }
