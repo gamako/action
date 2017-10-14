@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/veandco/go-sdl2/sdl"
 )
 
@@ -50,8 +48,6 @@ func (a *FrameAnimation) Draw(r *sdl.Renderer, time float64, transform *Transfor
 	dstH := float64(h) * transform.Scale.Y
 
 	dstRect := sdl.Rect{X: int32(transform.X - dstW/2), Y: int32(transform.Y - dstH/2), W: int32(dstW), H: int32(dstH)}
-
-	fmt.Printf("srcRect: %#v, dstRect: %#v\n", srcRect, dstRect)
 
 	// dstRectで拡大率
 	// angleで回転
