@@ -107,6 +107,12 @@ func (p *Player) Update(now float64) {
 			// たぶんここに速度係数を掛ける
 			p.X += x
 			p.Y += y
+
+			p.eyeSprite.X = x
+			p.eyeSprite.Y = y
+		} else {
+			p.eyeSprite.X = 0
+			p.eyeSprite.Y = 0
 		}
 	}
 
