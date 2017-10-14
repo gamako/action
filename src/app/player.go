@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math"
 
 	"github.com/veandco/go-sdl2/sdl"
@@ -104,10 +103,6 @@ func (p *Player) Draw(r *sdl.Renderer, parentTransform *AffineTransform, now flo
 	a := parentTransform.Mul(p.GetAffineTransform())
 
 	t := CreateTransform(a)
-
-	fmt.Printf("parentTransform: %#v\n", parentTransform)
-	fmt.Printf("a: %#v\n", a)
-	fmt.Printf("t: %#v\n", t)
 
 	p.animation.Draw(r, now, t)
 
