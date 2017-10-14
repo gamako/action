@@ -11,7 +11,12 @@ type Player struct {
 	Transform
 	controller Controller
 	animation  Animation
-	enabled    bool
+
+	eyeSprite *SpriteNode
+
+	children []Node
+
+	enabled bool
 }
 
 // CreatePlayer 生成
@@ -19,7 +24,21 @@ func CreatePlayer(ts []*Texture, c Controller) Player {
 	f := CreateFrameAnimation([]*Texture{ts[0], ts[1]}, 1)
 	animation := CreateLoopAnimation(f)
 
-	return Player{TransformIdentity, c, animation, false}
+	eyeSprite := CreateSpriteNode(ts[2], []Node{})
+
+	p := Player{
+		TransformIdentity,
+		c,
+		animation,
+		eyeSprite,
+		[]Node{eyeSprite},
+		false,
+	}
+
+	p.Scale.X = 4
+	p.Scale.Y = 4
+
+	return p
 }
 
 // GetTransform Transform情報
@@ -32,8 +51,8 @@ func (p *Player) Update(now float64) {
 
 	leftX := p.controller.GetAxis(sdl.CONTROLLER_AXIS_LEFTX)
 	leftY := p.controller.GetAxis(sdl.CONTROLLER_AXIS_LEFTY)
-	rightX := p.controller.GetAxis(sdl.CONTROLLER_AXIS_RIGHTX)
-	rightY := p.controller.GetAxis(sdl.CONTROLLER_AXIS_RIGHTY)
+	// rightX := p.controller.GetAxis(sdl.CONTROLLER_AXIS_RIGHTX)
+	// rightY := p.controller.GetAxis(sdl.CONTROLLER_AXIS_RIGHTY)
 	// leftStick := p.controller.GetButton(sdl.CONTROLLER_BUTTON_LEFTSTICK)
 	// leftShoulder := p.controller.GetButton(sdl.CONTROLLER_BUTTON_LEFTSHOULDER)
 	abutton := p.controller.GetButton(sdl.CONTROLLER_BUTTON_A)
@@ -53,31 +72,31 @@ func (p *Player) Update(now float64) {
 	// 	leftX, leftY, rightX, rightY, leftStick, leftShoulder, abutton, buttonDUp)
 
 	// 回転角度の決定 左スティックによる
-	{
-		x := float64(rightX) / -math.MinInt16
-		y := float64(rightY) / -math.MinInt16
+	// {
+	// 	x := float64(rightX) / -math.MinInt16
+	// 	y := float64(rightY) / -math.MinInt16
 
-		if math.Abs(x) >= 0.2 || math.Abs(y) >= 0.2 {
-			if y == 0 {
-				if x > 0 {
-					p.Transform.Angle = 90
-				} else if x < 0 {
-					p.Transform.Angle = 270
-				} else {
-					// ボタンを押していない間はangleをキープ
-				}
-			} else {
-				angle := math.Atan(-x/y) / math.Pi * 180
+	// 	if math.Abs(x) >= 0.2 || math.Abs(y) >= 0.2 {
+	// 		if y == 0 {
+	// 			if x > 0 {
+	// 				p.Transform.Angle = 90
+	// 			} else if x < 0 {
+	// 				p.Transform.Angle = 270
+	// 			} else {
+	// 				// ボタンを押していない間はangleをキープ
+	// 			}
+	// 		} else {
+	// 			angle := math.Atan(-x/y) / math.Pi * 180
 
-				if y > 0 {
-					angle += 180
-				}
+	// 			if y > 0 {
+	// 				angle += 180
+	// 			}
 
-				p.Transform.Angle = angle
-			}
+	// 			p.Transform.Angle = angle
+	// 		}
 
-		}
-	}
+	// 	}
+	// }
 
 	// 自身の移動
 	{
@@ -101,15 +120,14 @@ func (p *Player) Draw(r *sdl.Renderer, parentTransform *AffineTransform, now flo
 	}
 
 	a := parentTransform.Mul(p.GetAffineTransform())
-
 	t := CreateTransform(a)
 
 	p.animation.Draw(r, now, t)
 
-	DrawChildren(r, p, parentTransform, now)
+	DrawChildren(r, p, a, now)
 }
 
 // Chilidren 子
 func (p *Player) Chilidren() []Node {
-	return []Node{}
+	return p.children
 }

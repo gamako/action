@@ -143,17 +143,9 @@ func UpdateChildren(node Node, now float64) {
 	}
 }
 
-func Draw(r *sdl.Renderer, node Node, parentTransform *AffineTransform, now float64) {
-
-	node.Draw(r, parentTransform, now)
-
-	DrawChildren(r, node, parentTransform, now)
-}
-
 func DrawChildren(r *sdl.Renderer, node Node, parentTransform *AffineTransform, now float64) {
 
-	t := parentTransform.Mul(node.GetTransform().GetAffineTransform())
 	for _, child := range node.Chilidren() {
-		Draw(r, child, t, now)
+		child.Draw(r, parentTransform, now)
 	}
 }
