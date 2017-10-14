@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math"
 
 	"github.com/veandco/go-sdl2/sdl"
@@ -94,13 +95,21 @@ func (p *Player) Update(now float64) {
 }
 
 // Draw 描画
-func (p *Player) Draw(r *sdl.Renderer, parentTransform *Transform, now float64) {
+func (p *Player) Draw(r *sdl.Renderer, parentTransform *AffineTransform, now float64) {
 
 	if !p.enabled {
 		return
 	}
 
-	p.animation.Draw(r, now, &p.Transform)
+	a := parentTransform.Mul(p.GetAffineTransform())
+
+	t := CreateTransform(a)
+
+	fmt.Printf("parentTransform: %#v\n", parentTransform)
+	fmt.Printf("a: %#v\n", a)
+	fmt.Printf("t: %#v\n", t)
+
+	p.animation.Draw(r, now, t)
 
 	DrawChildren(r, p, parentTransform, now)
 }

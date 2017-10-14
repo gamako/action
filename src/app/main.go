@@ -8,34 +8,12 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-// Point 2D座標を表す構造体
-type Point struct {
-	X float64
-	Y float64
-}
-
-// Size サイズを表す構造体
-type Size struct {
-	W float64
-	H float64
-}
-
-// Transform 2Dtransformを表す構造体
-type Transform struct {
-	Point
-	Scale float64
-	Angle float64
-}
-
-// TransformIdentity 基本transform
-var TransformIdentity = Transform{Point{0, 0}, 1, 0}
-
 // Node ノードインターフェース
 // 表示キャラクタの管理と描画に関するインターフェース
 type Node interface {
 	GetTransform() *Transform
 	Update(float64)
-	Draw(*sdl.Renderer, *Transform, float64)
+	Draw(*sdl.Renderer, *AffineTransform, float64)
 	Chilidren() []Node
 }
 
@@ -122,7 +100,7 @@ func main() {
 		renderer.Clear()
 
 		for _, n := range nodes {
-			n.Draw(renderer, &TransformIdentity, now)
+			n.Draw(renderer, AffineTransformIdentity(), now)
 		}
 
 		// renderをwindowに反映
@@ -165,31 +143,17 @@ func UpdateChildren(node Node, now float64) {
 	}
 }
 
-func Draw(r *sdl.Renderer, node Node, parentTransform *Transform, now float64) {
+func Draw(r *sdl.Renderer, node Node, parentTransform *AffineTransform, now float64) {
 
 	node.Draw(r, parentTransform, now)
 
 	DrawChildren(r, node, parentTransform, now)
 }
 
-func DrawChildren(r *sdl.Renderer, node Node, parentTransform *Transform, now float64) {
+func DrawChildren(r *sdl.Renderer, node Node, parentTransform *AffineTransform, now float64) {
 
-	t := mul(node.GetTransform(), parentTransform)
+	t := parentTransform.Mul(node.GetTransform().GetAffineTransform())
 	for _, child := range node.Chilidren() {
 		Draw(r, child, t, now)
 	}
-}
-
-func mul(t1, t2 *Transform) *Transform {
-	// 簡易的に位置と大きさだけを扱う
-	return &Transform{
-		plus(&t1.Point, &t2.Point),
-		t1.Scale + t2.Scale,
-		t2.Angle}
-}
-
-func plus(p1, p2 *Point) Point {
-	return Point{
-		p1.X + p2.X,
-		p1.Y + p2.Y}
 }

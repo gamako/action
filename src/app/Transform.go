@@ -37,7 +37,7 @@ type Transform struct {
 }
 
 // TransformIdentity 基本transform
-var TransformIdentity = Transform{Point{0, 0}, Point{0, 0}, 0}
+var TransformIdentity = Transform{Point{0, 0}, Point{4, 4}, 0}
 
 func Plus(p1, p2 *Point) Point {
 	return Point{
