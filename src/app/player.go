@@ -12,7 +12,8 @@ type Player struct {
 	controller Controller
 	animation  Animation
 
-	eyeSprite *SpriteNode
+	eyeSprite     *SpriteNode
+	bulletTexture *Texture
 
 	children []Node
 
@@ -20,7 +21,7 @@ type Player struct {
 }
 
 // CreatePlayer 生成
-func CreatePlayer(ts []*Texture, c Controller) Player {
+func CreatePlayer(ts []*Texture, c Controller) *Player {
 	f := CreateFrameAnimation([]*Texture{ts[0], ts[1]}, 1)
 	animation := CreateLoopAnimation(f)
 
@@ -31,6 +32,7 @@ func CreatePlayer(ts []*Texture, c Controller) Player {
 		c,
 		animation,
 		eyeSprite,
+		ts[IndexBullet],
 		[]Node{eyeSprite},
 		false,
 	}
@@ -38,7 +40,7 @@ func CreatePlayer(ts []*Texture, c Controller) Player {
 	p.Scale.X = 4
 	p.Scale.Y = 4
 
-	return p
+	return &p
 }
 
 // GetTransform Transform情報
@@ -133,7 +135,7 @@ func (p *Player) Draw(r *sdl.Renderer, parentTransform *AffineTransform, now flo
 	DrawChildren(r, p, a, now)
 }
 
-// Chilidren 子
-func (p *Player) Chilidren() []Node {
+// Children 子
+func (p *Player) GetChildren() []Node {
 	return p.children
 }

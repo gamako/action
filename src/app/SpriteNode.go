@@ -50,7 +50,7 @@ func (n *SpriteNode) Draw(r *sdl.Renderer, parentTransform *AffineTransform, now
 	DrawChildren(r, n, a, now)
 }
 
-// Chilidren 子
-func (n *SpriteNode) Chilidren() []Node {
+// GetChildren 子
+func (n *SpriteNode) GetChildren() []Node {
 	return n.children
 }

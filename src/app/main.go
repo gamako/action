@@ -14,7 +14,25 @@ type Node interface {
 	GetTransform() *Transform
 	Update(float64)
 	Draw(*sdl.Renderer, *AffineTransform, float64)
-	Chilidren() []Node
+	GetChildren() []Node
+}
+
+var imageFiles = []string{
+	"images/anim/character0000.png",
+	"images/anim/character0001.png",
+	"images/anim/character0002.png",
+}
+
+const (
+	IndexChar0 int = iota
+	IndexChar1
+	IndexChar2
+	IndexBullet
+)
+
+var GlobalNode = &EmptyNode{
+	Transform{Point{0, 0}, Point{1, 1}, 0},
+	[]Node{},
 }
 
 func main() {
@@ -42,10 +60,7 @@ func main() {
 	// 最後にrendererの後始末
 	defer renderer.Destroy()
 
-	ts, err := LoadTextures(renderer, []string{
-		"images/anim/character0000.png",
-		"images/anim/character0001.png",
-		"images/anim/character0002.png"})
+	ts, err := LoadTextures(renderer, imageFiles)
 	if err != nil {
 		panic(err)
 	}
@@ -66,8 +81,6 @@ func main() {
 
 	man := CotrolerManager{}
 
-	nodes := []Node{}
-
 	startTime := time.Now()
 
 	for {
@@ -79,7 +92,7 @@ func main() {
 				p := CreatePlayer(ts, c)
 				p.animation.Start()
 
-				nodes = append(nodes, &p)
+				GlobalNode.AddChild(p)
 			}
 		}
 
@@ -89,9 +102,7 @@ func main() {
 		// sdl.GameControllerUpdate()
 
 		// Nodeをそれぞれ更新
-		for _, n := range nodes {
-			n.Update(now)
-		}
+		Update(GlobalNode, now)
 
 		// 毎回の画面の更新
 
@@ -99,9 +110,7 @@ func main() {
 		renderer.SetDrawColor(128, 128, 128, 255)
 		renderer.Clear()
 
-		for _, n := range nodes {
-			n.Draw(renderer, AffineTransformIdentity(), now)
-		}
+		GlobalNode.Draw(renderer, AffineTransformIdentity(), now)
 
 		// renderをwindowに反映
 		renderer.Present()
@@ -138,14 +147,14 @@ func Update(node Node, now float64) {
 }
 
 func UpdateChildren(node Node, now float64) {
-	for _, child := range node.Chilidren() {
+	for _, child := range node.GetChildren() {
 		Update(child, now)
 	}
 }
 
 func DrawChildren(r *sdl.Renderer, node Node, parentTransform *AffineTransform, now float64) {
 
-	for _, child := range node.Chilidren() {
+	for _, child := range node.GetChildren() {
 		child.Draw(r, parentTransform, now)
 	}
 }
