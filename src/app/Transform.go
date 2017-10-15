@@ -67,6 +67,18 @@ func (p1 *Point) Mul(v float64) Point {
 	}
 }
 
+func (p *Point) Normalized() Point {
+	l := math.Sqrt(p.X*p.X + p.Y*p.Y)
+	if l == 0 {
+		return Point{0, 0}
+	}
+
+	return Point{
+		p.X / l,
+		p.Y / l,
+	}
+}
+
 func (a *AffineTransform) Transform(p *Point) *Point {
 	return &Point{
 		a[0][0]*p.X + a[0][1]*p.Y + a[0][2]*1,

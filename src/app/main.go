@@ -8,19 +8,11 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-// Node ノードインターフェース
-// 表示キャラクタの管理と描画に関するインターフェース
-type Node interface {
-	GetTransform() *Transform
-	Update(float64)
-	Draw(*sdl.Renderer, *AffineTransform, float64)
-	GetChildren() []Node
-}
-
 var imageFiles = []string{
 	"images/anim/character0000.png",
 	"images/anim/character0001.png",
 	"images/anim/character0002.png",
+	"images/bullet1.png",
 }
 
 const (
@@ -31,8 +23,10 @@ const (
 )
 
 var GlobalNode = &EmptyNode{
-	Transform{Point{0, 0}, Point{1, 1}, 0},
-	[]Node{},
+	NodeBase{
+		Transform{Point{0, 0}, Point{1, 1}, 0},
+		[]Node{},
+	},
 }
 
 func main() {
@@ -137,24 +131,4 @@ func loadTexture(r *sdl.Renderer, name string) (*sdl.Texture, *sdl.Surface, erro
 		return nil, nil, err
 	}
 	return t, s, nil
-}
-
-func Update(node Node, now float64) {
-
-	node.Update(now)
-
-	UpdateChildren(node, now)
-}
-
-func UpdateChildren(node Node, now float64) {
-	for _, child := range node.GetChildren() {
-		Update(child, now)
-	}
-}
-
-func DrawChildren(r *sdl.Renderer, node Node, parentTransform *AffineTransform, now float64) {
-
-	for _, child := range node.GetChildren() {
-		child.Draw(r, parentTransform, now)
-	}
 }

@@ -17,7 +17,9 @@ type Player struct {
 
 	children []Node
 
-	enabled bool
+	enabled   bool
+	buttonOff bool
+	shotAngle Point
 }
 
 // CreatePlayer 生成
@@ -35,6 +37,8 @@ func CreatePlayer(ts []*Texture, c Controller) *Player {
 		ts[IndexBullet],
 		[]Node{eyeSprite},
 		false,
+		false,
+		Point{},
 	}
 
 	p.Scale.X = 4
@@ -112,9 +116,27 @@ func (p *Player) Update(now float64) {
 
 			p.eyeSprite.X = x
 			p.eyeSprite.Y = y
+
+			p1 := Point{x, y}
+			p.shotAngle = p1.Normalized()
 		} else {
 			p.eyeSprite.X = 0
 			p.eyeSprite.Y = 0
+		}
+	}
+
+	if p.buttonOff {
+		if abutton != 0 && !(p.shotAngle.X == 0 && p.shotAngle.Y == 0) {
+			p.buttonOff = false
+			// 弾を打つ
+			b := CreateBullet(p.bulletTexture, p.shotAngle.Mul(4))
+			b.Transform = p.Transform
+
+			GlobalNode.AddChild(b)
+		}
+	} else {
+		if abutton == 0 {
+			p.buttonOff = true
 		}
 	}
 
@@ -135,7 +157,7 @@ func (p *Player) Draw(r *sdl.Renderer, parentTransform *AffineTransform, now flo
 	DrawChildren(r, p, a, now)
 }
 
-// Children 子
+// GetChildren 子
 func (p *Player) GetChildren() []Node {
 	return p.children
 }
