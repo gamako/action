@@ -22,11 +22,9 @@ const (
 	IndexBullet
 )
 
-var GlobalNode = &EmptyNode{
-	NodeBase{
-		Transform{Point{0, 0}, Point{1, 1}, 0},
-		[]Node{},
-	},
+var GlobalNode = &NodeBase{
+	Transform{Point{0, 0}, Point{1, 1}, 0},
+	[]Node{},
 }
 
 func main() {

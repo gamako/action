@@ -4,11 +4,13 @@ import (
 	"fmt"
 )
 
+// Bullet 弾オブジェクト
 type Bullet struct {
 	SpriteNode
 	Delta Point
 }
 
+// CreateBullet 生成
 func CreateBullet(tex *Texture, delta Point) *Bullet {
 
 	return &Bullet{
@@ -17,6 +19,7 @@ func CreateBullet(tex *Texture, delta Point) *Bullet {
 	}
 }
 
+// Update 毎フレームの更新
 func (b *Bullet) Update(now float64) {
 
 	b.X += b.Delta.X
