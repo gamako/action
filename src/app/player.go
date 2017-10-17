@@ -41,8 +41,8 @@ func CreatePlayer(ts []*Texture, c Controller) *Player {
 		Point{},
 	}
 
-	p.Scale.X = 4
-	p.Scale.Y = 4
+	p.Scale.X = 2
+	p.Scale.Y = 2
 
 	return &p
 }
@@ -130,7 +130,7 @@ func (p *Player) Update(now float64) {
 			p.buttonOff = false
 			// 弾を打つ
 			b := CreateBullet(p.bulletTexture, p.shotAngle.Mul(4))
-			b.Transform = p.Transform
+			b.Transform.Point = p.Transform.Point
 
 			GlobalNode.AddChild(b)
 		}

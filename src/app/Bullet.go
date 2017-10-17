@@ -13,10 +13,13 @@ type Bullet struct {
 // CreateBullet 生成
 func CreateBullet(tex *Texture, delta Point) *Bullet {
 
-	return &Bullet{
+	b := &Bullet{
 		*CreateSpriteNode(tex, []Node{}),
 		delta,
 	}
+	b.Transform.Scale = Point{4, 4}
+
+	return b
 }
 
 // Update 毎フレームの更新
