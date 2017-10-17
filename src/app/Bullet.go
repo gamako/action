@@ -1,9 +1,5 @@
 package main
 
-import (
-	"fmt"
-)
-
 // Bullet 弾オブジェクト
 type Bullet struct {
 	SpriteNode
@@ -31,7 +27,5 @@ func (b *Bullet) Update(now float64) {
 	if (b.X < 0 || b.X > 800) || (b.Y < 0 || b.Y > 600) {
 		// 画面外に出たので消える
 		GlobalNode.DeleteChild(b)
-
-		fmt.Println("Global count", len(GlobalNode.Children))
 	}
 }
