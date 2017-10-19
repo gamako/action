@@ -10,7 +10,7 @@ type Bullet struct {
 func CreateBullet(tex *Texture, delta Point) *Bullet {
 
 	b := &Bullet{
-		*CreateSpriteNode(tex, []Node{}),
+		*CreateSpriteNode("Bullet", tex, []Node{}),
 		delta,
 	}
 	b.Transform.Scale = Point{4, 4}

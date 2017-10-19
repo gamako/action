@@ -4,15 +4,17 @@ import "github.com/veandco/go-sdl2/sdl"
 
 // SpriteNode
 type SpriteNode struct {
-	Transform
-	texture  *Texture
-	children []Node
+	NodeBase
+	texture *Texture
 }
 
 // CreateSpriteNode 生成
-func CreateSpriteNode(texture *Texture, children []Node) *SpriteNode {
+func CreateSpriteNode(name string, texture *Texture, children []Node) *SpriteNode {
 
-	return &SpriteNode{TransformIdentity, texture, children}
+	return &SpriteNode{
+		*CreateNodeBase(name),
+		texture,
+	}
 }
 
 // GetTransform Transform情報
@@ -48,9 +50,4 @@ func (n *SpriteNode) Draw(r *sdl.Renderer, parentTransform *AffineTransform, now
 	r.CopyEx(tex.Texture, &srcRect, &dstRect, n.Angle, nil, 0)
 
 	DrawChildren(r, n, a, now)
-}
-
-// GetChildren 子
-func (n *SpriteNode) GetChildren() []Node {
-	return n.children
 }

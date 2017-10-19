@@ -22,10 +22,7 @@ const (
 	IndexBullet
 )
 
-var GlobalNode = &NodeBase{
-	Transform{Point{0, 0}, Point{1, 1}, 0},
-	[]Node{},
-}
+var GlobalNode = CreateNodeBase("GlobalNode")
 
 func main() {
 	// sdlの初期化
@@ -74,6 +71,10 @@ func main() {
 	man := CotrolerManager{}
 
 	startTime := time.Now()
+
+	gameLevelManager := CreateGameLevelManager(Point{800, 600}, ts)
+
+	GlobalNode.AddChild(gameLevelManager)
 
 	for {
 		now := time.Since(startTime).Seconds()

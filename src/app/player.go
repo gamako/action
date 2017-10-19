@@ -8,14 +8,12 @@ import (
 
 // Player プレイヤー情報
 type Player struct {
-	Transform
+	NodeBase
 	controller Controller
 	animation  Animation
 
 	eyeSprite     *SpriteNode
 	bulletTexture *Texture
-
-	children []Node
 
 	enabled   bool
 	buttonOff bool
@@ -27,24 +25,31 @@ func CreatePlayer(ts []*Texture, c Controller) *Player {
 	f := CreateFrameAnimation([]*Texture{ts[0], ts[1]}, 1)
 	animation := CreateLoopAnimation(f)
 
-	eyeSprite := CreateSpriteNode(ts[2], []Node{})
+	eyeSprite := CreateSpriteNode("eye", ts[2], []Node{})
 
 	p := Player{
-		TransformIdentity,
+		*CreateNodeBase("Player"),
 		c,
 		animation,
 		eyeSprite,
 		ts[IndexBullet],
-		[]Node{eyeSprite},
 		false,
 		false,
 		Point{},
 	}
 
+	p.AddChild(eyeSprite)
+
 	p.Scale.X = 2
 	p.Scale.Y = 2
 
 	return &p
+}
+
+var ActivePlayers []*Player
+
+func GetActivePlayers() []*Player {
+	return ActivePlayers
 }
 
 // GetTransform Transform情報
@@ -69,6 +74,7 @@ func (p *Player) Update(now float64) {
 		if abutton != 0 {
 			println("player enabled :", p.controller.Name())
 			p.enabled = true
+			ActivePlayers = append(ActivePlayers, p)
 		} else {
 			return
 		}
@@ -155,9 +161,4 @@ func (p *Player) Draw(r *sdl.Renderer, parentTransform *AffineTransform, now flo
 	p.animation.Draw(r, now, t)
 
 	DrawChildren(r, p, a, now)
-}
-
-// GetChildren 子
-func (p *Player) GetChildren() []Node {
-	return p.children
 }
