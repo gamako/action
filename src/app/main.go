@@ -72,7 +72,21 @@ func main() {
 
 	startTime := time.Now()
 
-	gameLevelManager := CreateGameLevelManager(Point{800, 600}, ts)
+	w_, h_ := window.GetSize()
+	w := float64(w_)
+	h := float64(h_)
+	spawnPoints := []Point{
+		Point{0, 0},
+		Point{w / 2, 0},
+		Point{w, 0},
+		Point{0, h / 2},
+		Point{w, h / 2},
+		Point{0, h},
+		Point{w / 2, h},
+		Point{w, h},
+	}
+
+	gameLevelManager := CreateGameLevelManager(Point{800, 600}, ts, spawnPoints)
 
 	GlobalNode.AddChild(gameLevelManager)
 

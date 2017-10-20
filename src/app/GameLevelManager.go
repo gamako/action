@@ -10,13 +10,18 @@ type GameLevelManager struct {
 	nextEnemyTime float64
 	screenSize    Point
 	textures      []*Texture
+	spawnPoints   []Point
 }
 
 // CreateGameLevelManager 生成
-func CreateGameLevelManager(screenSize Point, textures []*Texture) *GameLevelManager {
+func CreateGameLevelManager(screenSize Point, textures []*Texture, spawnPoints []Point) *GameLevelManager {
+
+	rand.Seed(0)
+
 	return &GameLevelManager{
 		nextEnemyTime: 10,
 		textures:      textures,
+		spawnPoints:   spawnPoints,
 	}
 }
 
@@ -26,33 +31,25 @@ func randInRange(min, max float64) float64 {
 	return v*(max-min) + min
 }
 
+func randInRangeInt(min, max int) int {
+	v := rand.Float64()
+
+	return int(v*(float64(max-min))) + min
+}
+
 // Update 毎フレーム処理
 func (m *GameLevelManager) Update(now float64) {
 
 	if now > m.nextEnemyTime {
-		m.nextEnemyTime += 5
-		// 敵の発生
-		var startPoint Point
-		if rand.Float32() > 0.5 {
-			var x float64
-			if rand.Float32() > 0.5 {
-				x = 0
-			} else {
-				x = m.screenSize.X
-			}
-			startPoint = Point{x, randInRange(0, m.screenSize.Y)}
-		} else {
-			var y float64
-			if rand.Float32() > 0.5 {
-				y = 0
-			} else {
-				y = m.screenSize.Y
-			}
-			startPoint = Point{randInRange(0, m.screenSize.X), y}
-		}
+		m.nextEnemyTime++
 
+		// 敵のスポーンポイントをランダムに選ぶ
+		index := randInRangeInt(0, len(m.spawnPoints))
+		spawnPoint := m.spawnPoints[index]
+
+		// 敵の発生
 		newEnemy := CreateEnemy("enemy", m.textures[0])
-		newEnemy.Transform.Point = startPoint
+		newEnemy.Transform.Point = spawnPoint
 
 		GlobalNode.AddChild(newEnemy)
 

@@ -4,20 +4,14 @@ import (
 	"math"
 )
 
-type EnemyManager struct {
-	NodeBase
-}
-
-func (n *EnemyManager) Update(now float64) {
-
-}
-
+// Enemy 敵
 type Enemy struct {
 	SpriteNode
 	targetPlayer *Player
 	speed        float64
 }
 
+// CreateEnemy 生成
 func CreateEnemy(name string, tex *Texture) *Enemy {
 	e := &Enemy{
 		*CreateSpriteNode(name, tex, []Node{}),
@@ -29,6 +23,7 @@ func CreateEnemy(name string, tex *Texture) *Enemy {
 	return e
 }
 
+// Update 更新
 func (e *Enemy) Update(now float64) {
 	if e.targetPlayer == nil {
 		// 一番近いPlayerを探す
@@ -40,7 +35,8 @@ func (e *Enemy) Update(now float64) {
 			}
 			dx := e.X - p.X
 			dy := e.Y - p.Y
-			d := math.Sqrt(dx*dx - dy*dy)
+			d := math.Sqrt(dx*dx + dy*dy)
+
 			if neaestDistance > d {
 				neaestDistance = d
 				e.targetPlayer = p
