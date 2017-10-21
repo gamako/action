@@ -99,6 +99,8 @@ func main() {
 			cs := man.GetNewGameController()
 			for _, c := range cs {
 				p := CreatePlayer(ts, c)
+				p.X = w / 2
+				p.Y = h / 2
 				p.animation.Start()
 
 				GlobalNode.AddChild(p)
