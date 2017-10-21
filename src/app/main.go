@@ -23,6 +23,7 @@ const (
 )
 
 var GlobalNode = CreateNodeBase("GlobalNode")
+var GlobalCollisionDetecter = CreateCollisionDetector(AllCollideTags{})
 
 func main() {
 	// sdlの初期化
@@ -89,6 +90,7 @@ func main() {
 	gameLevelManager := CreateGameLevelManager(Point{800, 600}, ts, spawnPoints)
 
 	GlobalNode.AddChild(gameLevelManager)
+	GlobalNode.AddChild(GlobalCollisionDetecter)
 
 	for {
 		now := time.Since(startTime).Seconds()

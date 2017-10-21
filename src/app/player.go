@@ -135,10 +135,11 @@ func (p *Player) Update(now float64) {
 		if abutton != 0 && !(p.shotAngle.X == 0 && p.shotAngle.Y == 0) {
 			p.buttonOff = false
 			// 弾を打つ
-			b := CreateBullet(p.bulletTexture, p.shotAngle.Mul(4))
+			b := CreateBullet(p.bulletTexture, p.shotAngle.Mul(4), p.bulletTexture.Size())
 			b.Transform.Point = p.Transform.Point
 
 			GlobalNode.AddChild(b)
+			GlobalCollisionDetecter.AddCollisionNode(b, b)
 		}
 	} else {
 		if abutton == 0 {

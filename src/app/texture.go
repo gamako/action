@@ -50,3 +50,11 @@ func (t *Texture) Free() {
 	t.Texture.Destroy()
 	t.Surface.Free()
 }
+
+// Size サイズの取得
+func (t *Texture) Size() Size {
+	return Size{
+		float64(t.W),
+		float64(t.H),
+	}
+}

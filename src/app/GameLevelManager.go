@@ -48,10 +48,11 @@ func (m *GameLevelManager) Update(now float64) {
 		spawnPoint := m.spawnPoints[index]
 
 		// 敵の発生
-		newEnemy := CreateEnemy("enemy", m.textures[0])
+		newEnemy := CreateEnemy("enemy", m.textures[0], m.textures[0].Size())
 		newEnemy.Transform.Point = spawnPoint
 
 		GlobalNode.AddChild(newEnemy)
 
+		GlobalCollisionDetecter.AddCollisionNode(newEnemy, newEnemy)
 	}
 }
