@@ -41,8 +41,8 @@ func (e *Bullet) ColliderRect() *Rect {
 	r := Rect{
 		e.Transform.Point.X - e.ColliderSize.W/2*e.Transform.Scale.X,
 		e.Transform.Point.Y - e.ColliderSize.H/2*e.Transform.Scale.Y,
-		e.ColliderSize.W,
-		e.ColliderSize.H,
+		e.ColliderSize.W * e.Transform.Scale.Y,
+		e.ColliderSize.H * e.Transform.Scale.Y,
 	}
 	return &r
 }

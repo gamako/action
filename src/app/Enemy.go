@@ -69,8 +69,8 @@ func (e *Enemy) ColliderRect() *Rect {
 	r := Rect{
 		e.Transform.Point.X - e.ColliderSize.W/2*e.Transform.Scale.X,
 		e.Transform.Point.Y - e.ColliderSize.H/2*e.Transform.Scale.Y,
-		e.ColliderSize.W,
-		e.ColliderSize.H,
+		e.ColliderSize.W * e.Transform.Scale.X,
+		e.ColliderSize.H * e.Transform.Scale.Y,
 	}
 	return &r
 }
@@ -85,3 +85,20 @@ func (e *Enemy) OnCollision(other CollisonNode) {
 	}
 	GlobalNode.DeleteChild(e)
 }
+
+// 当たり判定の枠を書く
+// func (e *Enemy) Draw(r *sdl.Renderer, parentAffine *AffineTransform, now float64) {
+
+// 	e.SpriteNode.Draw(r, parentAffine, now)
+
+// 	rect1 := e.ColliderRect()
+// 	rect2 := &sdl.Rect{
+// 		int32(rect1.X),
+// 		int32(rect1.Y),
+// 		int32(rect1.W),
+// 		int32(rect1.H),
+// 	}
+
+// 	r.SetDrawColor(255, 0, 0, 255)
+// 	r.DrawRect(rect2)
+// }
