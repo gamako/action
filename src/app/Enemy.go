@@ -82,8 +82,8 @@ func (e *Enemy) GetNode() Node {
 func (e *Enemy) OnCollision(other CollisonNode) {
 	if other.CollisonTag() == TAG_BULLET {
 		GlobalCollisionDetecter.DeleteCollisionNode(e)
+		GlobalNode.DeleteChild(e)
 	}
-	GlobalNode.DeleteChild(e)
 }
 
 // 当たり判定の枠を書く
