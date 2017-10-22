@@ -121,7 +121,7 @@ func main() {
 		renderer.SetDrawColor(128, 128, 128, 255)
 		renderer.Clear()
 
-		GlobalNode.Draw(renderer, AffineTransformIdentity(), now)
+		GlobalNode.Draw(renderer, AffineTransformIdentity, now)
 
 		// renderをwindowに反映
 		renderer.Present()

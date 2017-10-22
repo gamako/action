@@ -88,7 +88,7 @@ func (a *AffineTransform) Transform(p *Point) *Point {
 
 func (t *Transform) GetAffineTransform() *AffineTransform {
 
-	a := AffineTransformIdentity()
+	a := AffineTransformIdentity
 
 	return a.
 		Scale(t.Scale.X, t.Scale.Y).
