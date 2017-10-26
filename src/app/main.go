@@ -23,7 +23,7 @@ const (
 )
 
 var GlobalNode = CreateNodeBase("GlobalNode")
-var GlobalCollisionDetecter = CreateCollisionDetector(AllCollideTags{})
+var GlobalCollisionDetecter = CreateCollisionDetector(AllCollideTagFilter)
 
 func main() {
 	// sdlの初期化
@@ -90,7 +90,6 @@ func main() {
 	gameLevelManager := CreateGameLevelManager(Point{800, 600}, ts, spawnPoints)
 
 	GlobalNode.AddChild(gameLevelManager)
-	GlobalNode.AddChild(GlobalCollisionDetecter)
 
 	for {
 		now := time.Since(startTime).Seconds()
@@ -114,6 +113,10 @@ func main() {
 
 		// Nodeをそれぞれ更新
 		Update(GlobalNode, now)
+
+		// 衝突判定
+		// Nodeの動きを全て適用した後に衝突判定を行いたいので、GlobalNodeとは別にループをまわす
+		Update(GlobalCollisionDetecter, now)
 
 		// 毎回の画面の更新
 
