@@ -105,4 +105,6 @@ func (d *CollisionDetector) Update(now float64) {
 		d.collisionNodesIsDirty = false
 	}
 
+	d.NodeBase.Update(now)
+
 }

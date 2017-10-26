@@ -24,6 +24,7 @@ func (n *SpriteNode) GetTransform() *Transform {
 
 // Update Update
 func (n *SpriteNode) Update(now float64) {
+	n.NodeBase.Update(now)
 }
 
 // Draw Draw

@@ -147,6 +147,7 @@ func (p *Player) Update(now float64) {
 		}
 	}
 
+	p.NodeBase.Update(now)
 }
 
 // Draw 描画

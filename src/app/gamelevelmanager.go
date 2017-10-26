@@ -55,4 +55,7 @@ func (m *GameLevelManager) Update(now float64) {
 
 		GlobalCollisionDetecter.AddCollisionNode(newEnemy, newEnemy.OnCollision)
 	}
+
+	m.NodeBase.Update(now)
+
 }
