@@ -53,6 +53,6 @@ func (m *GameLevelManager) Update(now float64) {
 
 		GlobalNode.AddChild(newEnemy)
 
-		GlobalCollisionDetecter.AddCollisionNode(newEnemy, newEnemy)
+		GlobalCollisionDetecter.AddCollisionNode(newEnemy, newEnemy.OnCollision)
 	}
 }

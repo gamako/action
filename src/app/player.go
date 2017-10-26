@@ -139,7 +139,7 @@ func (p *Player) Update(now float64) {
 			b.Transform.Point = p.Transform.Point
 
 			GlobalNode.AddChild(b)
-			GlobalCollisionDetecter.AddCollisionNode(b, b)
+			GlobalCollisionDetecter.AddCollisionNode(b, b.OnCollision)
 		}
 	} else {
 		if abutton == 0 {

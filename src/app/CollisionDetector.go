@@ -10,31 +10,22 @@ type CollisionDetector struct {
 }
 
 type collisionNodeInfo struct {
-	node      CollisonNode
-	onCollide OnDetectCollision
-	valid     bool
+	node        CollisonNode
+	onCollision OnCollision
+	valid       bool
 }
 
 // CollisonNode 衝突判定の対象ノードの満たすべきインターフェース
 type CollisonNode interface {
 	CollisonTag() int
 	ColliderRect() *Rect
-	GetNode() Node
 }
 
-// OnDetectCollision 衝突が発生したときのコールバックインターフェース
-type OnDetectCollision interface {
-	OnCollision(other CollisonNode)
-}
+// CollisionTagFilter タグ間の衝突判定フィルタ
+type CollisionTagFilter func(int, int) bool
 
-// CollisionTagFilter 衝突判定を行うかどうかを制御するためのフィルタ
-type CollisionTagFilter interface {
-	CollisionFilter(tag1, tag2 int) bool
-}
-
-// AllCollideTags すべてヒット対象とするフィルタ
-type AllCollideTags struct {
-}
+// OnCollision 衝突が発生したときのコールバックインターフェース
+type OnCollision func(other CollisonNode)
 
 // CreateCollisionDetector 生成
 func CreateCollisionDetector(filter CollisionTagFilter) *CollisionDetector {
@@ -46,15 +37,15 @@ func CreateCollisionDetector(filter CollisionTagFilter) *CollisionDetector {
 	}
 }
 
-// CollisionFilter AllCollideTagsのフィルタ条件
-func (o AllCollideTags) CollisionFilter(tag1, tag2 int) bool {
+// AllCollideTagFilter すべてを衝突対象とする
+func AllCollideTagFilter(tag1, tag2 int) bool {
 	return true
 }
 
 // AddCollisionNode 衝突判定対象の追加
-func (d *CollisionDetector) AddCollisionNode(node CollisonNode, onCollide OnDetectCollision) {
+func (d *CollisionDetector) AddCollisionNode(node CollisonNode, onCollision OnCollision) {
 
-	newInfo := collisionNodeInfo{node, onCollide, true}
+	newInfo := collisionNodeInfo{node, onCollision, true}
 	d.collisionNodes = append(d.collisionNodes, newInfo)
 }
 
@@ -82,8 +73,12 @@ func (d *CollisionDetector) detectCollisions() {
 				continue
 			}
 			if Intersect(n0.node.ColliderRect(), n1.node.ColliderRect()) {
-				n0.onCollide.OnCollision(n1.node)
-				n1.onCollide.OnCollision(n0.node)
+				n0.onCollision(n1.node)
+
+				// n0.onCollisionの中でDeleteCollisionNodeをされているかもしれない
+				if n1.valid {
+					n1.onCollision(n0.node)
+				}
 			}
 		}
 	}
